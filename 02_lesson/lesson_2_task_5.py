@@ -5,7 +5,8 @@ def month_to_season(month_number):
         6: 'Лето', 7: 'Лето', 8: 'Лето',
         9: 'Осень', 10: 'Осень', 11: 'Осень'
     }
-    return seasons.get(month_number, '5')
+    return seasons.get(month_number, 'Неверный номер месяца')
 
 
 print(month_to_season(2))
+print(month_to_season(13))
