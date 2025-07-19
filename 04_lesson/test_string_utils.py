@@ -3,110 +3,85 @@ from string_utils import StringUtils
 
 
 @pytest.fixture
-def string_utils():
+def utils():
     return StringUtils()
 
 
-# Метод capitalize()
 @pytest.mark.positive
 @pytest.mark.parametrize("input_str, expected", [
     ("skypro", "Skypro"),
-    ("123", "123"),          # числовое значение
-    ("04 апреля 2023", "04 Апреля 2023")  # дата
+    ("hello world", "Hello world"),
+    ("python", "Python"),
+    ("123", "123"),
+    ("тест", "Тест"),
+    ("04 апреля 2023", "04 апреля 2023"),
+    ("", ""),
+    (" ", " "),
 ])
-def test_capitalize_positive(string_utils, input_str, expected):
-    """Позитивные тесты для метода capitalize"""
-    result = string_utils.capitalize(input_str)
-    assert result == expected
+def test_capitalize_positive(utils, input_str, expected):
+    assert utils.capitalize(input_str) == expected
 
 
 @pytest.mark.negative
-@pytest.mark.parametrize("input_str, expected", [
-    ("   ", "   "),      # пустые пробелы
-    ("", ""),            # пустая строка
-    (None, TypeError),   # передача None
-    ([], TypeError)      # неправильный тип данных
-])
-def test_capitalize_negative(string_utils, input_str, expected):
-    """Негативные тесты для метода capitalize"""
-    if isinstance(expected, type) and issubclass(expected, Exception):
-        with pytest.raises(expected):
-            string_utils.capitalize(input_str)
-    else:
-        result = string_utils.capitalize(input_str)
-        assert result == expected
+def test_capitalize_negative(utils):
+    with pytest.raises(TypeError):
+        utils.capitalize(None)
+    with pytest.raises(TypeError):
+        utils.capitalize([])
 
 
-# Метод lower()
 @pytest.mark.positive
 @pytest.mark.parametrize("input_str, expected", [
-    ("SKYPRO", "skypro"),
-    ("Hello World", "hello world"),
-    ("ÄÖÜß", "äöüß")    # символы Unicode
+    ("   skypro", "skypro"),
+    ("  test  ", "test  "),
+    ("", ""),
+    (" ", ""),
 ])
-def test_lower_positive(string_utils, input_str, expected):
-    """Позитивные тесты для метода lower"""
-    result = string_utils.lower(input_str)
-    assert result == expected
+def test_trim(utils, input_str, expected):
+    assert utils.trim(input_str) == expected
 
 
 @pytest.mark.negative
-@pytest.mark.parametrize("input_str, expected", [
-    (None, TypeError),
-    (["list"], TypeError),
-    ({"dict": True}, TypeError)
-])
-def test_lower_negative(string_utils, input_str, expected):
-    """Негативные тесты для метода lower"""
-    with pytest.raises(expected):
-        string_utils.lower(input_str)
+def test_trim_negative(utils):
+    with pytest.raises(TypeError):
+        utils.trim(123)
 
 
-# Метод upper()
 @pytest.mark.positive
-@pytest.mark.parametrize("input_str, expected", [
-    ("skypro", "SKYPRO"),
-    ("привет мир", "ПРИВЕТ МИР"),
-    ("áéíóú", "ÁÉÍÓÚ")  # буквы с диакритическими знаками
+@pytest.mark.parametrize("string, symbol, expected", [
+    ("SkyPro", "S", True),
+    ("SkyPro", "U", False),
+    ("", "", True),
+    (" ", " ", True),
+    ("123", "2", True),
 ])
-def test_upper_positive(string_utils, input_str, expected):
-    """Позитивные тесты для метода upper"""
-    result = string_utils.upper(input_str)
-    assert result == expected
+def test_contains(utils, string, symbol, expected):
+    assert utils.contains(string, symbol) == expected
 
 
 @pytest.mark.negative
-@pytest.mark.parametrize("input_str, expected", [
-    (True, TypeError),
-    ({}, TypeError),
-    (None, TypeError)
-])
-def test_upper_negative(string_utils, input_str, expected):
-    """Негативные тесты для метода upper"""
-    with pytest.raises(expected):
-        string_utils.upper(input_str)
+def test_contains_negative(utils):
+    with pytest.raises(TypeError):
+        utils.contains(None, "a")
+    with pytest.raises(TypeError):
+        utils.contains("text", 123)
 
 
-# Метод strip()
 @pytest.mark.positive
-@pytest.mark.parametrize("input_str, expected", [
-    (" skypro ", "skypro"),
-    ("\\n\\t\\n hello \\n\\t\\r", "hello"),
-    ("123", "123")  # строка без пробелов
+@pytest.mark.parametrize("string, symbol, expected", [
+    ("SkyPro", "k", "SyPro"),
+    ("SkyPro", "Pro", "Sky"),
+    ("", "a", ""),
+    ("   ", " ", ""),
+    ("aabbcc", "b", "aacc"),
 ])
-def test_strip_positive(string_utils, input_str, expected):
-    """Позитивные тесты для метода strip"""
-    result = string_utils.strip(input_str)
-    assert result == expected
+def test_delete_symbol(utils, string, symbol, expected):
+    assert utils.delete_symbol(string, symbol) == expected
 
 
 @pytest.mark.negative
-@pytest.mark.parametrize("input_str, expected", [
-    (123, TypeError),     # число
-    (None, TypeError),    # null-значение
-    ([], TypeError)       # пустой список
-])
-def test_strip_negative(string_utils, input_str, expected):
-    """Негативные тесты для метода strip"""
-    with pytest.raises(expected):
-        string_utils.strip(input_str)
+def test_delete_symbol_negative(utils):
+    with pytest.raises(TypeError):
+        utils.delete_symbol([], "a")
+    with pytest.raises(TypeError):
+        utils.delete_symbol("text", 123)
