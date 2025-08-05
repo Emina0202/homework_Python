@@ -8,11 +8,12 @@ driver = webdriver.Chrome(
     )
 driver.implicitly_wait(20)
 
-driver.get('http://uitestingplayground.com/ajax')
+driver.get("http://uitestingplayground.com/ajax")
 
 driver.find_element(By.CSS_SELECTOR, "#ajaxButton").click()
 
 content = driver.find_element(By.CSS_SELECTOR, "#content")
 txt = content.find_element(By.CSS_SELECTOR, "#bg-success")
+print(txt)
 
 driver.quit()
