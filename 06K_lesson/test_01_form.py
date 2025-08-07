@@ -1,40 +1,62 @@
+import pytest
 from selenium import webdriver
-from selenium.webdriver.edge.service import Service as EdgeService
-from webdriver_manager.microsoft import EdgeChromiumDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-driver = webdriver.Edge(service=EdgeService(EdgeChromiumDriverManager().install()))
 
-driver.get("https://bonigarcia.dev/selenium-webdriver-java/data-types.html")
+@pytest.fixture(scope="module")
+def browser():
+    driver = webdriver.Chrome()
+    yield driver
+    driver.quit()
 
-driver.find_element(By.CSS_SELECTOR, "First-name").send_keys("Иван")
-driver.find_element(By.CSS_SELECTOR, "Last name").send_keys("Петров")
-driver.find_element(By.CSS_SELECTOR, "Address").send_keys("Ленина 55-3")
-driver.find_element(By.CSS_SELECTOR, "Email").send_keys("test@skypro.com")
-driver.find_element(By.CSS_SELECTOR, "Phone number").send_keys("+7985899998787")
-driver.find_element(By.CSS_SELECTOR, "Zip code").send_keys("")
-driver.find_element(By.CSS_SELECTOR, "City").send_keys("Москва")
-driver.find_element(By.CSS_SELECTOR, "Country").send_keys("Россия")
-driver.find_element(By.CSS_SELECTOR, "Job position").send_keys("QA")
-driver.find_element(By.CSS_SELECTOR, "Company").send_keys("SkyPro")
 
-submit_button = edge_driver.find_element(By.CSS_SELECTOR, "submit-button").click()
+def test_form_validation(browser):
+    # 1. Открыть страницу
+    browser.get(
+        "https://bonigarcia.dev/selenium-webdriver-java/data-types.html"
+        )
 
-wait = WebDriverWait(edge_driver, 10)
-wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, "form-control")))
+    # 2. Заполнить форму значениями
+    browser.find_element(
+        By.CSS_SELECTOR, 'input[name="first-name"]').send_keys("Иван")
+    browser.find_element(
+        By.CSS_SELECTOR, 'input[name="last-name"]').send_keys("Петров")
+    browser.find_element(
+        By.CSS_SELECTOR, 'input[name="address"]').send_keys("Ленина, 55-3")
+    browser.find_element(
+        By.CSS_SELECTOR, 'input[name="e-mail"]').send_keys("test@skypro.com")
+    browser.find_element(
+        By.CSS_SELECTOR, 'input[name="phone"]').send_keys("+7985899998787")
+    # Zip code оставляем пустым
+    browser.find_element(
+        By.CSS_SELECTOR, 'input[name="city"]').send_keys("Москва")
+    browser.find_element(
+        By.CSS_SELECTOR, 'input[name="country"]').send_keys("Россия")
+    browser.find_element(
+        By.CSS_SELECTOR, 'input[name="job-position"]').send_keys("QA")
+    browser.find_element(
+        By.CSS_SELECTOR, 'input[name="company"]').send_keys("SkyPro")
 
-filled_fields = [
-        input_field for input_field in form_inputs
-        if input_field.get_attribute("name") != "zipCode"
+    # 3. Нажать кнопку Submit
+    browser.find_element(
+        By.CSS_SELECTOR, 'button[type="submit"]').click()
+
+    # 4. Проверить, что поле Zip code подсвечено красным
+    zip_code = WebDriverWait(browser, 10).until(
+        EC.presence_of_element_located((By.CSS_SELECTOR, '#zip-code'))
+    )
+    assert "is-invalid" in zip_code.get_attribute(
+        "class"), "Поле Zip code должно быть подсвечено красным"
+
+    # 5. Проверить, что остальные поля подсвечены зеленым
+    valid_fields = [
+        'first-name', 'last-name', 'address', 'e-mail',
+        'phone', 'city', 'country', 'job-position', 'company'
     ]
 
-zip_code_field = next(field for field in form_inputs if field.get_attribute("name") == "zipCode")
-assert "is-invalid" in zip_code_field.get_attribute("class"), "Поле ZIP code не подсветилось красным."
-
-
-for field in filled_fields:
- assert "is-valid" in field.get_attribute("class"), f"Поле '{field.get_attribute('name')}' не подсветилось зеленым."
-
-driver.quit()
+    for field in valid_fields:
+        element = browser.find_element(By.CSS_SELECTOR, f'#{field}')
+        assert "is-valid" in element.get_attribute(
+            "class"), f"Поле {field} должно быть подсвечено зеленым"
