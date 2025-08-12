@@ -47,7 +47,7 @@ def test_form_validation(browser):
     zip_code = WebDriverWait(browser, 10).until(
         EC.presence_of_element_located((By.CSS_SELECTOR, '#zip-code'))
     )
-    assert "is-invalid" in zip_code.get_attribute(
+    assert "alert-danger" in zip_code.get_attribute(
         "class"), "Поле Zip code должно быть подсвечено красным"
 
     # 5. Проверить, что остальные поля подсвечены зеленым
