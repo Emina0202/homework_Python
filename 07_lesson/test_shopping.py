@@ -5,11 +5,13 @@ from products_page import ProductsPage
 from cart_page import CartPage
 from checkout_page import CheckoutPage
 
+
 @pytest.fixture
 def browser():
     driver = webdriver.Firefox()
     yield driver
     driver.quit()
+
 
 def test_shopping_flow(browser):
     # Инициализация страниц
@@ -36,5 +38,6 @@ def test_shopping_flow(browser):
 
     # Шаг 5: Проверить итоговую сумму
     total_text = checkout_page.get_total_amount()
-    assert "Total: $58.29" in total_text, f"Ожидалась сумма $58.29, получено {total_text}"
-    
+    assert "Total: $58.29" in total_text, (
+        f"Ожидалась сумма $58.29, получено {total_text}"
+        )
