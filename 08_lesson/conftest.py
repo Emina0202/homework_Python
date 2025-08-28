@@ -6,7 +6,7 @@ from config import Config
 def auth_headers():
     """Фикстура для авторизационных заголовков"""
     return {
-        "Authorization": f"Bearer {Config.TOKEN}",
+        "Authorization": f"Bearer {Config.API_TOKEN}",
         "Content-Type": "application/json"
     }
 

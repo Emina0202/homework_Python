@@ -6,7 +6,7 @@ class ProjectsAPI:
     def __init__(self):
         self.base_url = Config.API_URL
         self.headers = {
-            "Authorization": f"Bearer {Config.TOKEN}",
+            "Authorization": f"Bearer {Config.API_TOKEN}",
             "Content-Type": "application/json"
         }
 
